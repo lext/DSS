@@ -2,8 +2,10 @@ from pyqtgraph.Qt import QtGui, QtCore
 from PyQt4.QtCore import pyqtSignal
 import numpy as np
 import pyqtgraph as pg
-pg.setConfigOptions(antialias=True)
+from MassiveDataCurve import *
+
 pg.setConfigOption('background', 'w')
+pg.setConfigOptions(antialias=True)
 from scipy.signal import hamming
 import sqlite3
 from array import array
@@ -37,9 +39,9 @@ class DSSUI(QtGui.QMainWindow):
         self.p1 = pg.PlotWidget()
         # Details of a segment
         self.p2 = pg.PlotWidget()
-        self._signal_curve = pg.PlotCurveItem()
+        self._signal_curve = MassiveDataCurve()
         self.p1.addItem(self._signal_curve)
-        self._fragment_curve = pg.PlotCurveItem()
+        self._fragment_curve = MassiveDataCurve()
         self.p2.addItem(self._fragment_curve)
         self.p1.setMouseEnabled(x=True, y=False)
         self.p2.setMouseEnabled(x=False, y=False)
@@ -49,13 +51,13 @@ class DSSUI(QtGui.QMainWindow):
         # axis
         self.p1.getAxis('left').setPen((0,0,0))
         self.p1.getAxis('bottom').setPen((0,0,0))
-        self.p1.getAxis('left').setLabel('Amplitude', units='mV')
-        self.p1.getAxis('bottom').setLabel('Time', units='ms')
+        self.p1.getAxis('left').setLabel('Amplitude', units='V')
+        self.p1.getAxis('bottom').setLabel('Time [ms]')
         
         self.p2.getAxis('left').setPen((0,0,0))
         self.p2.getAxis('bottom').setPen((0,0,0))
-        self.p2.getAxis('left').setLabel('Amplitude', units='mV')
-        self.p2.getAxis('bottom').setLabel('Time', units='ms')
+        self.p2.getAxis('left').setLabel('Amplitude', units='V')
+        self.p2.getAxis('bottom').setLabel('Time [ms]')
 
         # Layouts
         self.l1 = QtGui.QHBoxLayout(centralwidget)
@@ -101,8 +103,9 @@ class DSSUI(QtGui.QMainWindow):
     def update_plot(self):
         x = self._x
         dt = self._dt
-        t = np.linspace(0, x.shape[0] * dt * 1000 , x.shape[0])
-        self._signal_curve.setData(t, x, pen='b')
+
+        self._signal_curve.setSignalData(x, dt)
+        self.p1.getAxis('bottom').setScale(dt*x.shape[0]/self._signal_curve.x.shape[0])
         #self.lr.setBounds([t.min(), t.max()])
         #self.lr.setRegion([t.min(), t.max()])
 		 
