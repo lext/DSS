@@ -13,17 +13,21 @@ class DSSUI(QtGui.QMainWindow):
     def __init__(self):
         super(DSSUI, self).__init__()
         self.build_gui()
+        self.connect(self.pbOpen, QtCore.SIGNAL('clicked()'), self.open_signal_slot)
+        self.connect(self.pbSave, QtCore.SIGNAL('clicked()'), self.save_segments_slot)
+        self.connect(self.pbAdd, QtCore.SIGNAL('clicked()'), self.add_segment_slot)
+        self.connect(self.pbRem, QtCore.SIGNAL('clicked()'), self.rem_segment_slot)
 
     def build_gui(self):
         self.setWindowTitle('Digital signal segmentation tool')
         centralwidget = QtGui.QWidget()
-        self.openPB = QtGui.QPushButton("Open signal")
-        self.savePB = QtGui.QPushButton("Save results")
-        self.addPB = QtGui.QPushButton("Add segment")
-        self.remPB = QtGui.QPushButton("Remove segment")
-        self.segmentsL = QtGui.QLabel("Segments")
+        self.pbOpen = QtGui.QPushButton("Open signal")
+        self.pbSave = QtGui.QPushButton("Save results")
+        self.pbAdd = QtGui.QPushButton("Add segment")
+        self.pbRem = QtGui.QPushButton("Remove segment")
+        self.lSegments = QtGui.QLabel("Segments")
 
-        self.segmentsLW = QtGui.QListView()
+        self.lwSegments = QtGui.QListView()
         #Signal
         self.p1 = pg.PlotWidget()
         # Details of a segment
@@ -51,15 +55,15 @@ class DSSUI(QtGui.QMainWindow):
 
         self.l12 = QtGui.QVBoxLayout()
         self.l1.addLayout(self.l12)
-        self.l12.addWidget(self.openPB)
-        self.l12.addWidget(self.savePB)
-        self.l12.addWidget(self.remPB)
-        self.l12.addWidget(self.addPB)
-        self.l12.addWidget(self.segmentsL)
-        self.l12.addWidget(self.segmentsLW)
+        self.l12.addWidget(self.pbOpen)
+        self.l12.addWidget(self.pbSave)
+        self.l12.addWidget(self.pbRem)
+        self.l12.addWidget(self.pbAdd)
+        self.l12.addWidget(self.lSegments)
+        self.l12.addWidget(self.lwSegments)
 
         # Size policies
-        self.segmentsLW.setSizePolicy(QtGui.QSizePolicy.Fixed,\
+        self.lwSegments.setSizePolicy(QtGui.QSizePolicy.Fixed,\
         QtGui.QSizePolicy.Expanding)
 
         self.p1.setSizePolicy(QtGui.QSizePolicy.Expanding,\
@@ -68,10 +72,10 @@ class DSSUI(QtGui.QMainWindow):
         self.p2.setSizePolicy(QtGui.QSizePolicy.Expanding,\
         QtGui.QSizePolicy.Preferred)
 
-        self.segmentsL.setSizePolicy(QtGui.QSizePolicy.Minimum,\
+        self.lSegments.setSizePolicy(QtGui.QSizePolicy.Minimum,\
         QtGui.QSizePolicy.Minimum)
 
-        self.segmentsLW.setMaximumWidth(150)
+        self.lwSegments.setMaximumWidth(150)
         self.setMinimumWidth(800)
         self.setMinimumHeight(500)
         # Setting central widget
@@ -82,4 +86,16 @@ class DSSUI(QtGui.QMainWindow):
         l_ind = int(l/self._dt)
         r_ind = int(r/self._dt)
         return (l_ind, r_ind)
+        
+    def open_signal_slot(self):
+        print("Open")
+        
+    def save_segments_slot(self):
+        print("Save")
+        
+    def add_segment_slot(self):
+        print("Add")
+        
+    def rem_segment_slot(self):
+        print("Remove")
 
