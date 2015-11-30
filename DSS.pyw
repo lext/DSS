@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python2
 #
 import sys
 from PyQt4 import QtCore, QtGui
@@ -9,7 +9,7 @@ def main():
 	app.setApplicationName('EGEGrouper')
 	form = DSSUI.DSSUI()
 	form.showMaximized()
-	app.exec()
+	app.exec_()
 
 if __name__ == "__main__":
 	sys.exit(main())

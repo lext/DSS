@@ -13,11 +13,16 @@ class DSSUI(QtGui.QMainWindow):
     def __init__(self):
         super(DSSUI, self).__init__()
         self.build_gui()
+
         self.connect(self.pbOpen, QtCore.SIGNAL('clicked()'), self.open_signal_slot)
         self.connect(self.pbSave, QtCore.SIGNAL('clicked()'), self.save_segments_slot)
         self.connect(self.pbAdd, QtCore.SIGNAL('clicked()'), self.add_segment_slot)
         self.connect(self.pbRem, QtCore.SIGNAL('clicked()'), self.rem_segment_slot)
-
+        
+        self._x = None
+        self._dt = None
+        self._t = None
+	    
     def build_gui(self):
         self.setWindowTitle('Digital signal segmentation tool')
         centralwidget = QtGui.QWidget()
@@ -26,25 +31,31 @@ class DSSUI(QtGui.QMainWindow):
         self.pbAdd = QtGui.QPushButton("Add segment")
         self.pbRem = QtGui.QPushButton("Remove segment")
         self.lSegments = QtGui.QLabel("Segments")
-
+        # ListView of segments
         self.lwSegments = QtGui.QListView()
         #Signal
         self.p1 = pg.PlotWidget()
         # Details of a segment
         self.p2 = pg.PlotWidget()
-
+        self._signal_curve = pg.PlotCurveItem()
+        self.p1.addItem(self._signal_curve)
+        self._fragment_curve = pg.PlotCurveItem()
+        self.p2.addItem(self._fragment_curve)
         self.p1.setMouseEnabled(x=True, y=False)
         self.p2.setMouseEnabled(x=False, y=False)
         self.p1.showGrid(x=True, y=True)
         self.p2.showGrid(x=True, y=True)
-        # Region selector
-        self.lr = pg.LinearRegionItem()
-        self.p1.addItem(self.lr)
+
         # axis
         self.p1.getAxis('left').setPen((0,0,0))
         self.p1.getAxis('bottom').setPen((0,0,0))
+        self.p1.getAxis('left').setLabel('Amplitude', units='mV')
+        self.p1.getAxis('bottom').setLabel('Time', units='ms')
+        
         self.p2.getAxis('left').setPen((0,0,0))
         self.p2.getAxis('bottom').setPen((0,0,0))
+        self.p2.getAxis('left').setLabel('Amplitude', units='mV')
+        self.p2.getAxis('bottom').setLabel('Time', units='ms')
 
         # Layouts
         self.l1 = QtGui.QHBoxLayout(centralwidget)
@@ -87,15 +98,40 @@ class DSSUI(QtGui.QMainWindow):
         r_ind = int(r/self._dt)
         return (l_ind, r_ind)
         
+    def update_plot(self):
+        x = self._x
+        dt = self._dt
+        t = np.linspace(0, x.shape[0] * dt * 1000 , x.shape[0])
+        self._signal_curve.setData(t, x, pen='b')
+        #self.lr.setBounds([t.min(), t.max()])
+        #self.lr.setRegion([t.min(), t.max()])
+		 
+
+	    
     def open_signal_slot(self):
-        print("Open")
+        # Getting a filename from the dialog
+        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open signal')
+        if not filename:
+            return
+        # Getting sampling frequency
+        sf, state = QtGui.QInputDialog.getInt(self, 'Enter sampling frequency', "SF:", 500)
+        if not state:
+            return
+        # Loading signal to the memory
+        self._x = np.load(str(filename))
+        self._dt = 1/float(sf)
+        
+        self.update_plot()
         
     def save_segments_slot(self):
-        print("Save")
+        print "Save"
         
     def add_segment_slot(self):
-        print("Add")
+        # Region selector
+        #self.lr = pg.LinearRegionItem()
+        #self.p1.addItem(self.lr)
+        print "Add"
         
     def rem_segment_slot(self):
-        print("Remove")
+        print "Remove"
 
