@@ -20,11 +20,11 @@ class DSSUI(QtGui.QMainWindow):
         self.connect(self.pbSave, QtCore.SIGNAL('clicked()'), self.save_segments_slot)
         self.connect(self.pbAdd, QtCore.SIGNAL('clicked()'), self.add_segment_slot)
         self.connect(self.pbRem, QtCore.SIGNAL('clicked()'), self.rem_segment_slot)
-        
+
         self._x = None
         self._dt = None
         self._t = None
-	    
+
     def build_gui(self):
         self.setWindowTitle('Digital signal segmentation tool')
         centralwidget = QtGui.QWidget()
@@ -53,7 +53,7 @@ class DSSUI(QtGui.QMainWindow):
         self.p1.getAxis('bottom').setPen((0,0,0))
         self.p1.getAxis('left').setLabel('Amplitude', units='V')
         self.p1.getAxis('bottom').setLabel('Time [ms]')
-        
+
         self.p2.getAxis('left').setPen((0,0,0))
         self.p2.getAxis('bottom').setPen((0,0,0))
         self.p2.getAxis('left').setLabel('Amplitude', units='V')
@@ -94,12 +94,15 @@ class DSSUI(QtGui.QMainWindow):
         # Setting central widget
         self.setCentralWidget(centralwidget)
 
+        # segments
+        self.segments = []
+
     def get_selection(self):
-        l, r = region = self.lr.getRegion()
+        l, r = self.lr.getRegion()
         l_ind = int(l/self._dt)
         r_ind = int(r/self._dt)
         return (l_ind, r_ind)
-        
+
     def update_plot(self):
         x = self._x
         dt = self._dt
@@ -108,9 +111,9 @@ class DSSUI(QtGui.QMainWindow):
         self.p1.getAxis('bottom').setScale(dt*x.shape[0]/self._signal_curve.x.shape[0])
         #self.lr.setBounds([t.min(), t.max()])
         #self.lr.setRegion([t.min(), t.max()])
-		 
 
-	    
+
+
     def open_signal_slot(self):
         # Getting a filename from the dialog
         filename = QtGui.QFileDialog.getOpenFileName(self, 'Open signal')
@@ -123,18 +126,37 @@ class DSSUI(QtGui.QMainWindow):
         # Loading signal to the memory
         self._x = np.load(str(filename))
         self._dt = 1/float(sf)
-        
+
         self.update_plot()
-        
+
     def save_segments_slot(self):
         print "Save"
-        
+
     def add_segment_slot(self):
         # Region selector
-        #self.lr = pg.LinearRegionItem()
-        #self.p1.addItem(self.lr)
-        print "Add"
-        
+        lr = pg.LinearRegionItem()
+        self.p1.addItem(lr)
+
+        vb = self._signal_curve.getViewBox()
+        vbrange = vb.viewRange()[0]
+        l = vbrange[0]+int(vbrange[1]-vbrange[0])*0.07
+        r = vbrange[1]-int(vbrange[1]-vbrange[0])*0.07
+
+        lr.setBounds([0, self._x.shape[0]])
+        lr.sigRegionChangeFinished.connect(self.region_changed)
+        lr.setRegion([l, r])
+
+        self.segments.append(lr)
+
+    def region_changed(self, lr):
+        dt = self._dt
+        x = self._x
+        curve_len = self._signal_curve.x.shape[0]
+
+        l, r = lr.getRegion()
+        l_t = l*dt*x.shape[0]/curve_len
+        r_t = r*dt*x.shape[0]/curve_len
+        print l_t, r_t
     def rem_segment_slot(self):
         print "Remove"
 
