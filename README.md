@@ -1,10 +1,12 @@
 # DSS
 
-DSS - digital signal segmentation tool is developed for a manual segmentation of signals. The program has two main features: support of heavy data and a database in sqlite containing the information about segments for the given signal.
+DSS (digital signal segmentation) - a tool developed for a manual segmentation of "heavy signals". I have developed this program to do a segmentation of signals, which have 500 kHz sampling frequency and length about at least 100 seconds. 
+To reduce number of points for visualization, I used 3rd-level approximation coefficients of DWT with Daubechy wavelets of the 4th order.
 
-The software is developed using python 2.7, and has the following dependencies:
+The program takes as and input *.npy files and saves the results to a text file.
 
-* Python 2.7
+The software was developed using python 2.7, and has the following dependencies:
 * PyQt
 * pyqtgraph
 * numpy
+* pywavelets
