@@ -93,7 +93,7 @@ class DSSUI(QtGui.QMainWindow):
             return
         self.filename = filename
         # Loading signal to the memory
-        self._x = np.load(str(filename))
+        self._x = np.fromfile(str(filename), dtype="<f")
         self._dt = 1/float(sf)
         self.update_plot()
         if os.path.isfile(self.filename[:-4]+"_segm.txt"):
