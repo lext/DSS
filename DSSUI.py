@@ -70,7 +70,7 @@ class DSSUI(QtGui.QMainWindow):
 
         # segments
         self.segments = []
-
+        self.filename = ""
 
     def update_plot(self):
         x = self._x
@@ -82,19 +82,23 @@ class DSSUI(QtGui.QMainWindow):
 
     def open_signal_slot(self):
         # Getting a filename from the dialog
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open signal')
+        if not self.filename:
+            filename = QtGui.QFileDialog.getOpenFileName(self, 'Open signal')
+        else:
+            dirname = os.path.dirname(self.filename)
+            filename = QtGui.QFileDialog.getOpenFileName(self, 'Open signal', directory=dirname)
         if not filename:
             return
         # Getting sampling frequency
         sf, state = QtGui.QInputDialog.getInt(self, 'Enter sampling frequency', "SF:", 500)
         if not state:
             return
-        self.filename = filename
+        self.filename = str(filename)
         # Loading signal to the memory
         self.p1.clear()
         self._signal_curve = MassiveDataCurve()
         self.p1.addItem(self._signal_curve)
-        self._x = np.fromfile(str(filename), dtype="<f")
+        self._x = np.fromfile(self.filename, dtype="<f")
         self._dt = 1/float(sf)
         self.update_plot()
         self.segments = []
