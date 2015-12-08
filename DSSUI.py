@@ -36,8 +36,6 @@ class DSSUI(QtGui.QMainWindow):
         # Plot widget and Massive Curve Initializtion
         self.p1 = pg.PlotWidget()
         # Details of a segment
-        self._signal_curve = MassiveDataCurve()
-        self.p1.addItem(self._signal_curve)
         self.p1.setMouseEnabled(x=True, y=False)
         self.p1.showGrid(x=True, y=True)
 
@@ -93,9 +91,13 @@ class DSSUI(QtGui.QMainWindow):
             return
         self.filename = filename
         # Loading signal to the memory
+        self.p1.clear()
+        self._signal_curve = MassiveDataCurve()
+        self.p1.addItem(self._signal_curve)
         self._x = np.fromfile(str(filename), dtype="<f")
         self._dt = 1/float(sf)
         self.update_plot()
+        self.segments = []
         if os.path.isfile(self.filename[:-4]+"_segm.txt"):
             with open(self.filename[:-4]+"_segm.txt", "r") as f:
                 for line in f:
@@ -115,10 +117,11 @@ class DSSUI(QtGui.QMainWindow):
         self.pbSave.setEnabled(True)
         self.pbAdd.setEnabled(True)
         self.pbRem.setEnabled(True)
+        self.setWindowTitle(self.filename)
 
     def save_segments_slot(self):
         with open(self.filename[:-4]+"_segm.txt", "w") as f:
-            for lr in self.segments:
+            for lr in sorted(self.segments, key=lambda x:self.get_region(x)[0]):
                 l, r = self.get_region(lr)
                 f.write("{0} {1}\n".format(l, r))
 
