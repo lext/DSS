@@ -129,6 +129,9 @@ class DSSUI(QtGui.QMainWindow):
                 l, r = self.get_region(lr)
                 f.write("{0} {1}\n".format(l, r))
 
+        mb = QtGui.QMessageBox(self)
+        mb.setText("{0} segments saved!".format(len(self.segments)))
+        mb.exec_()
 
     def add_segment_slot(self):
         # Region selector
