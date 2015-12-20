@@ -1,9 +1,8 @@
 # DSS
 
-DSS (digital signal segmentation) - a tool developed for a manual segmentation of "heavy signals". I have developed this program to do a segmentation of signals, which have 500 kHz sampling frequency and length about at least 100 seconds. 
-To reduce number of points for visualization, I used 3rd-level approximation coefficients of DWT with Daubechy wavelets of the 4th order.
+DSS (digital signal segmentation) - is a tool which I use for segmentation of high-frequency signals (sampling freq. 500 kHz) in my doctoral dissertation.
 
-The program takes as and input *.npy files and saves the results to a text file.
+The program takes as and input a raw binary file with floats in lettle-endian format. As a result it produces a text file with a suffix *_segm.txt* in the same folder where the input file is located.
 
 The software was developed using python 2.7, and has the following dependencies:
 * PyQt
