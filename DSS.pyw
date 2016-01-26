@@ -6,7 +6,7 @@ import DSSUI
 
 def main():
 	app = QtGui.QApplication(sys.argv)
-	app.setApplicationName('EGEGrouper')
+	app.setApplicationName('Digital Signal Segmenter')
 	form = DSSUI.DSSUI()
 	form.showMaximized()
 	app.exec_()
